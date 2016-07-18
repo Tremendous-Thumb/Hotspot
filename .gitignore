@@ -14,3 +14,7 @@ compiled/
 
 ## NPM ##
 node_modules/
+
+## API KEYS ##
+auth/fb.js
+config

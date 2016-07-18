@@ -17,41 +17,14 @@ CREATE TABLE spots (
   rating VARCHAR,
   latitude REAL,
   longitude REAL,
-  image VARCHAR,
-  spots_users_id INT REFERENCES spots_users(id)
+  image VARCHAR
+  -- yelp_id VARCHAR finish yelp TODO
 );
 
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  username VARCHAR,
-  password VARCHAR,
-  salt VARCHAR,
-  spots_users_id INT REFERENCES spots_users(id)
+  name VARCHAR,
+  email VARCHAR,
+  facebookId BIGINT,
+  facebookAccessToken VARCHAR
 );
-
-INSERT INTO spots_users (userId, spotId)
-  VALUES (1, 1);
-
-INSERT INTO spots_users (userId, spotId)
-  VALUES (1, 2);
-
-INSERT INTO spots_users (userId, spotId)
-  VALUES (2, 1);
-
-INSERT INTO spots_users (userId, spotId)
-  VALUES (2, 3);
-
-INSERT INTO users (username, password, salt, spots_users_id)
-  VALUES ('alex', 'password', 1);
-
-INSERT INTO users (username, password, salt, spots_users_id)
-  VALUES ('ryan', 'password', 2);
-
-INSERT INTO spots (name, description, latitude, longitude, image, spots_users_id)
-  VALUES ('Dads Deck', 'Nice, homey, and outdoors', '37.5', '-112', '/boston.jpg', '1');
-
-INSERT INTO spots (name, description, latitude, longitude, image, spots_users_id)
-  VALUES ('Hack Reactor', 'Rad', '100', '-50', '/library.jpg', '1');
-
-INSERT INTO spots (name, description, latitude, longitude, image, spots_users_id)
-  VALUES ('Spot 3', 'Sick...and tight', '37.5', '30',  '/study2.jpg', '1');

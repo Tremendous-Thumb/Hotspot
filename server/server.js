@@ -1,62 +1,65 @@
 import express from 'express';
 import path from 'path';
 import serverConfig from './server-config';
-import Spot from './db/spotQueries';
-import User from './db/userQueries';
+import db from './db/db';
 import passport from 'passport';
-import { passportJwtConfig } from './auth';
-import auth from './auth';
+import {facebookAuthConfig} from './auth/auth';
 
 const app = express();
 const port = process.env.PORT || 8000;
 
-serverConfig(app, express, passportJwtConfig);
+serverConfig(app, express, passport, db);
+facebookAuthConfig(db.findUser, db.createUser);
 
 // Render the main splash page upon arrival
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, './server-test-views/splash.html'));
+  console.log('redirected back');
+  // res.sendFile(path.join(__dirname, './views/splash.html'));
+  res.render('index');
 });
 
-// Route to signup page
-app.get('/signup', function(req, res) {
-  res.sendFile(path.join(__dirname, './server-test-views/signup.html'));
+app.get('/login', (req, res) => {
+  res.render('login');
 });
 
-// create new users
-app.post('/signup', function(req, res) {
-  // do server-side check of inputs
-
-  // hash the password, store the user, redirect to /spots
-  User.hashPassword(req.body.password)
-    .then((userToStore) => User.createUser(userToStore))
-    .then((results) => res.redirect('/spots'))
-    .catch((err) => res.send('error!'));
-
+app.get('/signup', (req, res) => {
+  res.render('signup');
 });
 
-// Navigate to login
-app.get('/login', function(req, res) {
-  res.sendFile(path.join(__dirname, './server-test-views/login.html'));
-});
-
-app.post('/login', auth.isAuthenticated(), (req, res) => {
+app.post('/login', (req, res) => {
   res.redirect('/spots');
+});
+
+// route for facebook authentication and login
+// different scopes while logging in
+app.get('/auth/facebook',
+  passport.authenticate('facebook', { scope: 'email' }
+));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/spots');
+  });
+
+app.get('/logout', function(req, res) {
+  req.logout();
+  res.redirect('/');
 });
 
 // Get all of a user's spots.
 app.get('/spots', function(req, res) {
-  res.render('spots');
+  console.log('redirected to spots');
+  res.sendFile(path.join(__dirname, './views/spots.html')); // index.html for react app
 });
 
-
-// Log users out
-
 // RESTFUl API for retrieving spots from the db
-app.get('/api/spots', Spot.getAllSpots);
-app.get('/api/spots/:id', Spot.getSingleSpot);
-app.post('/api/spots', Spot.createSpot);
-app.put('/api/spots/:id', Spot.updateSpot);
-app.delete('/api/spots/:id', Spot.removeSpot);
+app.get('/api/spots', db.getAllSpots);
+app.get('/api/spots/:id', db.getSingleSpot);
+app.post('/api/spots', db.createSpot);
+app.put('/api/spots/:id', db.updateSpot);
+app.delete('/api/spots/:id', db.removeSpot);
 
 
 app.listen(port, () => {
