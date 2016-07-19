@@ -59,7 +59,9 @@ var tastyRestaurants = [
 ];
 
 ////////// TEMPLATES FOR GEOPOINT and GEOSET in geoJSON FORMAT //////////
-var geoJSONPoint = (longitude, latitude) => {
+var thumbDown = 'http://emojipedia-us.s3.amazonaws.com/cache/8f/32/8f32d2d9cdc00990f5d992396be4ab5a.png';
+var thumbUp = 'http://emojipedia-us.s3.amazonaws.com/cache/79/bb/79bb8226054d3b254d3389ff8c9fe534.png';
+var geoJSONPoint = (longitude, latitude, thumb) => {
   return {
     type: 'Feature',
     geometry: {
@@ -68,7 +70,7 @@ var geoJSONPoint = (longitude, latitude) => {
     },
     properties: {
       icon: {
-        iconUrl: 'http://emojipedia-us.s3.amazonaws.com/cache/79/bb/79bb8226054d3b254d3389ff8c9fe534.png',
+        iconUrl: thumb,
         iconSize: [35, 35],
         iconAnchor: [20, 20]
       }
@@ -88,13 +90,15 @@ var geoJSONSet = () => {
 ////////// HELPER FUNCTIONS - TODO MODULARIZE //////////
 var getSpots = () => {
   var spotsSet = geoJSONSet();
-  var restaurant, lati, long;
+  var thumb = true;
+  var restaurant, lati, long, thumb;
 
   for (var i = 0; i < tastyRestaurants.length; i += 1) {
     restaurant = tastyRestaurants[i];
     lati = restaurant.latitude;
     long = restaurant.longitude;
-    restaurant = geoJSONPoint(long, lati);
+    restaurant.rating === 0 ? thumb = thumbDown : thumb = thumbUp;
+    restaurant = geoJSONPoint(long, lati, thumb);
     spotsSet[0].features.push(restaurant);
   }
   return spotsSet;
