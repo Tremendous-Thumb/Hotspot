@@ -12,7 +12,8 @@ var Map = React.createClass({
       var marker = point.layer;
       var feature = marker.feature;
       marker.setIcon(L.icon(feature.properties.icon));
-      var content = '<h2>' + feature.properties.title + '<\/h2>';
+      var content = '<h2>' + feature.properties.title + '<\/h2>' +
+        '<img src="' + feature.properties.image + '" alt="">';
       marker.bindPopup(content);
     });
 
@@ -63,22 +64,24 @@ var tastyRestaurants = [
 ////////// TEMPLATES FOR GEOPOINT and GEOSET in geoJSON FORMAT //////////
 var thumbDown = 'http://emojipedia-us.s3.amazonaws.com/cache/8f/32/8f32d2d9cdc00990f5d992396be4ab5a.png';
 var thumbUp = 'http://emojipedia-us.s3.amazonaws.com/cache/79/bb/79bb8226054d3b254d3389ff8c9fe534.png';
-var geoJSONPoint = (longitude, latitude, name, thumb) => {
+var testImage = 'http://img4.wikia.nocookie.net/__cb20140321012355/spiritedaway/images/1/1f/Totoro.gif';
+var geoJSONPoint = (longitude, latitude, name, thumb, image) => {
   return {
     type: 'Feature',
     geometry: {
       type: 'Point',
-      coordinates: [longitude, latitude] // [longitude, latitude]
+      coordinates: [longitude, latitude]
     },
-    properties: {
+    properties: {  // for styling
       title: name,
+      image: image,
       icon: {
         iconUrl: thumb,
         iconSize: [35, 35],
         iconAnchor: [20, 20],
         popupAnchor: [0, -15]
       }
-    } // for styling
+    }
   };
 };
 
@@ -103,7 +106,7 @@ var getSpots = () => {
     long = restaurant.longitude;
     name = restaurant.name;
     restaurant.rating === 0 ? thumb = thumbDown : thumb = thumbUp;
-    restaurant = geoJSONPoint(long, lati, name, thumb);
+    restaurant = geoJSONPoint(long, lati, name, thumb, testImage);
     spotsSet[0].features.push(restaurant);
   }
   return spotsSet;
