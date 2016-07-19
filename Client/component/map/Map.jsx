@@ -4,6 +4,7 @@ L.mapbox.accessToken = 'pk.eyJ1Ijoicm1jY2hlc24iLCJhIjoiY2lxbHkxbXFiMDA5dWZubm5mN
 
 var Map = React.createClass({
   componentDidMount() {
+    grabLocation();
     this.map = L.mapbox.map('map-one', 'mapbox.streets').setView(defaultCoord, 14);
 
     var restaurantPoints = L.mapbox.featureLayer().addTo(this.map);
@@ -111,5 +112,14 @@ var getSpots = () => {
   }
   return spotsSet;
 };
+
+var grabLocation = () => {
+  navigator.geolocation.getCurrentPosition(function(position) {
+    console.log('you are at long:', position.coords.longitude);
+    console.log('lat:', position.coords.latitude);
+    defaultCoord = [position.coords.longitude, position.coords.latitude];
+  });
+};
+
 
 window.Map = Map;
