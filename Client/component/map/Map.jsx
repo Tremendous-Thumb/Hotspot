@@ -7,6 +7,13 @@ var Map = React.createClass({
     this.map = L.mapbox.map('map-one', 'mapbox.streets').setView(defaultCoord, 14);
 
     var restaurantPoints = L.mapbox.featureLayer().addTo(this.map);
+
+    restaurantPoints.on('layeradd', function(point) {
+      var marker = point.layer;
+      var feature = marker.feature;
+      marker.setIcon(L.icon(feature.properties.icon));
+    });
+
     restaurantPoints.setGeoJSON(getSpots());
   },
 
@@ -59,7 +66,13 @@ var geoJSONPoint = (longitude, latitude) => {
       type: 'Point',
       coordinates: [longitude, latitude] // [longitude, latitude]
     },
-    properties: {} // for styling
+    properties: {
+      icon: {
+        iconUrl: 'http://emojipedia-us.s3.amazonaws.com/cache/79/bb/79bb8226054d3b254d3389ff8c9fe534.png',
+        iconSize: [35, 35],
+        iconAnchor: [20, 20]
+      }
+    } // for styling
   };
 };
 
@@ -74,7 +87,6 @@ var geoJSONSet = () => {
 
 ////////// HELPER FUNCTIONS - TODO MODULARIZE //////////
 var getSpots = () => {
-  console.log('grabbin spots');
   var spotsSet = geoJSONSet();
   var restaurant, lati, long;
 
