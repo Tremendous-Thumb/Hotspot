@@ -3,8 +3,10 @@ module.exports = {
     'es6': true
   },
   parserOptions: {
+    sourceType: 'module',
+    experimentalObjectRestSpread: true,
     ecmaFeatures: {
-      'jsx': true
+      'jsx': true,
     }
   },
   rules: {
