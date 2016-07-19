@@ -19,7 +19,7 @@
 
 Widely supported in most browsers for desktop and mobile devices. Recommended to use some sort of error handling and detection of feature.
 
-FOr testing whether a uswer is able to use this feature and option is to use Modernizr to check ( https://modernizr.com/ )
+For testing whether a user is able to use this feature and option is to use Modernizr to check ( https://modernizr.com/ )
 
 Use Javascript `navigator.Geolocation` object which will grab the current location, although attempts to do this as quickly as possible so accuracy may be compromised. On success we will receive an object with `coords.latitude` and `coords.longitude` values.
 
