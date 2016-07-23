@@ -8,7 +8,7 @@ var CollectionDetailModel = ({item, closeCollectionItem}) => (
     <span>Location</span><span>{item.location}</span>
     <span>Keywords</span><span>{item.keywords}</span>
     <span>Notes</span><span>{item.notes}</span>
-    <img src="" alt="Close Button" onClick={() => { closeCollectionItem() }} />
+    <img src="" alt="Close Button" onClick={() => { closeCollectionItem(); }} />
   </div>
 );
 

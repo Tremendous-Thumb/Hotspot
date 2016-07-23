@@ -5,3 +5,6 @@
 **/*.min.js
 client/data/*
 compiled/
+server/
+Client/reducers/
+Client/actions/

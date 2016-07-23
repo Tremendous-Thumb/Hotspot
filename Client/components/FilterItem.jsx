@@ -9,11 +9,11 @@ var FilterItem = ({filter, appliedFilters, toggleFilter}) => {
   }
   return (
     <div className='filter'>
-      <div className={cssClasses} onClick={ () => { toggleFilter(filter, appliedFilters) }}>
+      <div className={cssClasses} onClick={ () => { toggleFilter(filter, appliedFilters); }}>
       {filter}
       </div>
     </div>
   );
-}
+};
 
 export default FilterItem;
