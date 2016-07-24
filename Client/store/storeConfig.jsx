@@ -1,6 +1,5 @@
 import { createStore, compose, applyMiddleware } from 'redux';
 import ReduxPromise from 'redux-promise';
-// This needs to be updated based upon what Derek names the master reducer
 import rootReducer from '../reducers';
 
 export default function configureStore(initialState) {

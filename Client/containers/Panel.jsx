@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import CollectionModel from '../component/CollectionModel';
-var Menu = require('react-burger-menu').push;
+import { bindActionCreators } from 'redux';
+import CollectionModel from '../components/CollectionModel';
+import FilterItem from '../components/FilterItem';
+import Menu from 'react-burger-menu';
+import * as Actions from '../actions';
 
 class Panel extends React.Component {
-
-
 
   renderPanel() {
     if (this.props.PanelMode === 'collection') {
@@ -40,7 +41,7 @@ class Panel extends React.Component {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({toggleCollectionList, toggleFilterList}, dispatch)
+    actions: bindActionCreators(Actions, dispatch)
   };
 }
 

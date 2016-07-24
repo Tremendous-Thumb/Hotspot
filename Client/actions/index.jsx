@@ -15,8 +15,6 @@ export const PANEL_OPEN_COLLECTION_ITEM = 'PANEL_OPEN_COLLECTION_ITEM';
 export const PANEL_CLOSE_COLLECTION_ITEM = 'PANEL_CLOSE_COLLECTION_ITEM';
 export const PANEL_DELETE_COLLECTION_ITEM = 'PANEL_DELETE_COLLECTION_ITEM';
 
-export const POPULATE_FILTER_OPTIONS = 'POPULATE_FILTER_OPTIONS';
-
 export const MAP_CONFIRM_POINT = 'MAP_CONFIRM_POINT';
 export const FETCH_COLLECTION = 'FETCH_COLLECTION';
 
@@ -53,10 +51,12 @@ export function toggleFilterList(panelMode) {
 }
 
 // Click Handler for Nav Logout button
-export function logout() {
+export function logout(collection) {
   // Make final post request to update user's data
+  request.post(endpoints.spots).send(collection);
+
   // End the user's session
-  $.get(enpoints.logout);
+  request.get(endpoints.logout);
 
   return {
     type: NAV_CLICK_LOGOUT
@@ -81,13 +81,14 @@ export function toggleFilter(filter, selectedFilters, collection) {
     if (_.findIndex(selectedFilters, spot.type) > -1) {
       filteredRestaurants.push(spot);
     }
-  })
+  });
 
   return {
     type: PANEL_CLICK_FILTER_ITEM,
     payload: {
       selectedFilters: selectedFilters,
       filteredRestaurants: filteredRestaurants
+    }
   }
 }
 
@@ -138,7 +139,7 @@ export function clickLocationSubmit(name, latitude, longitude, rating, filters) 
   filters = filterOrganizer([data], filters);
 
   return {
-    type: MAP_CONFIRM_POINT
+    type: MAP_CONFIRM_POINT,
     payload: {
       newSpot: data,
       filters: filters
@@ -161,7 +162,7 @@ export function fetchCollection() {
   }
 }
 
-function filterOrganizer(collection, filters) => {
+filterOrganizer = (collection, filters) => {
   filters = filters || [];
 
   _.map(collection, (value) => {

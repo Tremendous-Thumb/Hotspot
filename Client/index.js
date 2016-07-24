@@ -10,12 +10,11 @@ import Map from './containers/Map';
 import Panel from './containers/Panel';
 import configureStore from './store/storeConfig.jsx';
 
-const createStoreWithMiddleware = applyMiddleware(ReduxPromise)(createStore);
 const store = configureStore();
 
 //NEED TO CHOSE HOW WE WANT TO SET UP STORE
 ReactDOM.render(
-  <Provider store={store} store2={createStoreWithMiddleware(reducers)}>
+  <Provider store={store}>
     <Nav/>
     <Map />
     <Panel />

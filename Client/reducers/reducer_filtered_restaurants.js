@@ -1,10 +1,19 @@
 import { PANEL_CLICK_FILTER_ITEM } from '../actions/index';
 
-export default function(state = {}, action) {
+const initialState = {
+  filterSelected: [],
+  filteredRestaurants: []
+};
+
+export default function(state = initialState, action) {
   switch (action.type) {
-  case PANEL_CLICK_FILTER_ITEM:
-    return {...state, filterSelected: [action.payload.selectedFilters]};
-  case PANEL_CLICK_FILTER_ITEM:
-    return {...state, filteredRestaurants: [action.payload.filteredrestaurants]};
+    case PANEL_CLICK_FILTER_ITEM:
+      return {
+        ...state,
+        filterSelected: action.payload.selectedFilters,
+        filteredRestaurants: action.payload.filteredrestaurants
+      };
+    default:
+      return state;
   }
 }
