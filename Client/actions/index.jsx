@@ -36,7 +36,7 @@ export function toggleCollectionList(panelMode, isOpen) {
       panelMode: panelMode,
       isOpen: isOpen
     }
-  }
+  };
 }
 
 // Click Handler for Nav Filter button
@@ -57,7 +57,7 @@ export function toggleFilterList(panelMode, isOpen) {
       panelMode: panelMode,
       isOpen: isOpen
     }
-  }
+  };
 }
 
 // Click Handler for Nav Logout button
@@ -100,8 +100,8 @@ export function toggleFilter(filter, selectedFilters, collection) {
       selectedFilters: selectedFilters.slice(),
       filteredRestaurants: filteredRestaurants.slice()
     }
-  }
-};
+  };
+}
 
 // Click Handler for Panel Collection item
 export function viewCollectionItem(item) {
@@ -109,7 +109,7 @@ export function viewCollectionItem(item) {
   return {
     type: PANEL_OPEN_COLLECTION_ITEM,
     payload: item
-  }
+  };
 }
 
 // Click Handler for Panel Collection closeup
@@ -117,7 +117,7 @@ export function closeCollectionItem(item) {
   // close the current panel view back to the collection
   return {
     type: PANEL_CLOSE_COLLECTION_ITEM
-  }
+  };
 }
 
 export function deleteCollectionItem(item) {
@@ -132,7 +132,7 @@ export function deleteCollectionItem(item) {
       collection: collection.slice(),
       filters: filters.slice()
     }
-  }
+  };
 }
 
 // Click Handler for map's submit
@@ -147,36 +147,89 @@ export function clickLocationSubmit(name, latitude, longitude, rating) {
 
   // Add type and image from returned request
   console.log('location submit');
-  
-  const data = request.post(endpoints.spots).send(spotToAdd);
-  filters = filterOrganizer([data], filters);
-
-  return {
-    type: MAP_CONFIRM_POINT,
-    payload: {
-      newSpot: data,
-      filters: filters
-    }
-  };
+  return makePostRequest(endpoints.spots, spotToAdd)
+    .then((spot) => {
+      console.log('got this back', spot);
+      spot = JSON.parse(spot.text).data;
+      const filters = filterOrganizer([spot], filters);
+      return {
+        type: MAP_CONFIRM_POINT,
+        payload: {
+          newSpot: spot,
+          filters: filters.slice()
+        }
+      };
+    })
+    .catch((err) => console.log(err));
 }
 
 export function fetchCollection() {
   // This function should only be called once on startup
   // Query database for user's entire collection
-  const collection = request.get(endpoints.spots);
-
-  const filters = filterOrganizer(collection);
-
-  return {
-    type: FETCH_COLLECTION,
-    payload: {
-      collection: collection.slice(),
-      filters: filters.slice()
-    }
-  };
+  // const collection = request.get(endpoints.spots);
+  // const collection = [
+  //   {
+  //     name: 'The Flying Falafal',
+  //     latitude: 37.7812322,
+  //     longitude: -122.4134787,
+  //     rating: 5,
+  //     type: 'middle-east'
+  //   },
+  //   {
+  //     name: 'Show Dogs',
+  //     latitude: 37.7821228,
+  //     longitude: -122.4130593,
+  //     rating: 5,
+  //     type: 'american'
+  //   },
+  //   {
+  //     name: 'Lemonade',
+  //     latitude: 37.7848661,
+  //     longitude: -122.4057182,
+  //     rating: 5,
+  //     type: 'drink'
+  //   },
+  //   {
+  //     name: 'Super Duper Burgers',
+  //     latitude: 37.7862143,
+  //     longitude: -122.4053212,
+  //     rating: 5,
+  //     type: 'american'
+  //   },
+  //   {
+  //     name: 'Réveille Coffee Co.',
+  //     latitude: 37.7735341,
+  //     longitude: -122.3942448,
+  //     rating: 5,
+  //     type: 'coffee'
+  //   },
+  //   {
+  //     name: 'Denny\'s',
+  //     latitude: 37.7859249,
+  //     longitude: -122.407801,
+  //     rating: 0,
+  //     type: 'american'
+  //   }
+  // ];
+  return makeGetRequest(endpoints.spots)
+    .then((spots) => {
+      console.log('got this back', spots);
+      spots = JSON.parse(spots.text).data;
+      const filters = filterOrganizer(spots);
+      // cb(spots);
+      return {
+        type: FETCH_COLLECTION,
+        payload: {
+          collection: spots.slice(),
+          filters: filters.slice()
+        }
+      };
+    })
+    .catch((err) => console.log(err));
 }
 
-const filterOrganizer = (collection, filters) => {
+
+function filterOrganizer(collection, filters) {
   filters = filters || [];
 
   _.map(collection, (value) => {
@@ -186,4 +239,31 @@ const filterOrganizer = (collection, filters) => {
   });
 
   return filters;
+}
+
+function makePostRequest(endpoint, data) {
+  console.log('making post request');
+  return new Promise((resolve, reject) => {
+    request.post(endpoint)
+      .send(data)
+      .end((err, res) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(res);
+      });
+  });
+}
+
+function makeGetRequest(endpoint) {
+  console.log('making get request');
+  return new Promise((resolve, reject) => {
+    request.get(endpoint)
+      .end((err, res) => {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(res);
+      });
+  });
 }

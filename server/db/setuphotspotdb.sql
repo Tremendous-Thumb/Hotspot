@@ -6,8 +6,8 @@ CREATE DATABASE hotspots;
 
 CREATE TABLE spots_users (
   id SERIAL PRIMARY KEY,
-  userId INT,
-  spotId INT
+  userid INT,
+  spotid INT
 );
 
 CREATE TABLE spots (

@@ -3,8 +3,8 @@ import dbConnection from './dbConnect';
 
 const spotUserSchema = {
   columns: {
-    userId: 'number',
-    spotId: 'number'
+    userid: 'number',
+    spotid: 'number'
   },
   tableName: 'spots_users'
 };

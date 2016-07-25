@@ -14,7 +14,7 @@ class Panel extends React.Component {
   }
 
   render() {
-
+    
     let panelItems;
 
     if (this.props.panelMode === 'filter') {

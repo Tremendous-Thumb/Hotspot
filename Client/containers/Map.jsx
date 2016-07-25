@@ -18,15 +18,64 @@ class Map extends React.Component {
   }
 
   componentDidMount() {
-    renderMap();
-    getUserLocation(mainMap);
+    this.props.actions.fetchCollection();
+    setTimeout(() => {
+      console.log('total collection is', this.props.totalCollection);
+      this.renderMap();
+      this.getUserLocation(mainMap);
+    }, 3000);
+  }
+
+  renderMap() {
+    console.log('lmapbox', L.mapbox);
+    mainMap = L.mapbox.map('map-one', 'mapbox.streets')
+      .setView(defaultCoord, 16);
+
+    var geocoderControl = L.mapbox.geocoderControl('mapbox.places', {
+      autocomplete: true,
+      keepOpen: true,
+      proximity: true,
+      container: 'geocoder-container'
+    });
+    geocoderControl.addTo(mainMap);
+
+    geocoderControl.on('select', function(res, mainMap) {
+      foundRestaurant(res, mainMap);
+    });
+
+    this.addPointsLayer(mainMap);
+
+    return mainMap;
+  }
+
+  addPointsLayer(map) {
+    var restaurantPoints = L.mapbox.featureLayer().addTo(map);
+
+    restaurantPoints.on('layeradd', function(point) {
+      var marker = point.layer;
+      var feature = marker.feature;
+      marker.setIcon(L.icon(feature.properties.icon));
+      var content = '<h2>' + feature.properties.title + '<\/h2>' +
+      '<img src="' + feature.properties.image + '" alt="">';
+      marker.bindPopup(content);
+    });
+    console.log('set geojson on', restaurantPoints, 'with', this.props.totalCollection);
+    const formattedPoints = formatGeoJSON(this.props.totalCollection);
+    console.log('formatted points are', formattedPoints);
+    restaurantPoints.setGeoJSON(formatGeoJSON(this.props.totalCollection));
+  }
+
+  // Helpers for interacting with users live location
+  getUserLocation() {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      geoSuccess(position);
+    }, geoError);
   }
 
   render() {
-
     // Sets collection to default to the entire collection
     let collection = this.props.totalCollection;
-
+    console.log('total collection', this.props.totalCollection);
     // If any filters have been selected and a filtered collection
     // exists, send that into the map instead
     if (this.props.filteredCollection !== []) {
@@ -54,44 +103,44 @@ function mapDispatchToProps(dispatch) {
 }
 
 ////////// TESTING DATA - TODO REMOVE /////////
-var tastyRestaurants = [
-  {
-    name: 'The Flying Falafal',
-    latitude: 37.7812322,
-    longitude: -122.4134787,
-    rating: 5
-  },
-  {
-    name: 'Show Dogs',
-    latitude: 37.7821228,
-    longitude: -122.4130593,
-    rating: 5
-  },
-  {
-    name: 'Lemonade',
-    latitude: 37.7848661,
-    longitude: -122.4057182,
-    rating: 5
-  },
-  {
-    name: 'Super Duper Burgers',
-    latitude: 37.7862143,
-    longitude: -122.4053212,
-    rating: 5
-  },
-  {
-    name: 'Réveille Coffee Co.',
-    latitude: 37.7735341,
-    longitude: -122.3942448,
-    rating: 5
-  },
-  {
-    name: 'Denny\'s',
-    latitude: 37.7859249,
-    longitude: -122.407801,
-    rating: 0
-  }
-];
+// var tastyRestaurants = [
+//   {
+//     name: 'The Flying Falafal',
+//     latitude: 37.7812322,
+//     longitude: -122.4134787,
+//     rating: 5
+//   },
+//   {
+//     name: 'Show Dogs',
+//     latitude: 37.7821228,
+//     longitude: -122.4130593,
+//     rating: 5
+//   },
+//   {
+//     name: 'Lemonade',
+//     latitude: 37.7848661,
+//     longitude: -122.4057182,
+//     rating: 5
+//   },
+//   {
+//     name: 'Super Duper Burgers',
+//     latitude: 37.7862143,
+//     longitude: -122.4053212,
+//     rating: 5
+//   },
+//   {
+//     name: 'Réveille Coffee Co.',
+//     latitude: 37.7735341,
+//     longitude: -122.3942448,
+//     rating: 5
+//   },
+//   {
+//     name: 'Denny\'s',
+//     latitude: 37.7859249,
+//     longitude: -122.407801,
+//     rating: 0
+//   }
+// ];
 
 ////////// TEST IMAGES TODO - REMOVE FOR FINAL //////////
 var thumbDown = 'http://emojipedia-us.s3.amazonaws.com/cache/8f/32/8f32d2d9cdc00990f5d992396be4ab5a.png';
@@ -130,6 +179,16 @@ var geoJSONSet = () => {
 };
 
 ////////// HELPER FUNCTIONS - TODO MODULARIZE //////////
+function formatGeoJSON(array) {
+  const ratingImg = array.rating === 0 ? thumbDown : thumbUp;
+  const geoPointArray = array.map((spot) => geoJSONPoint(spot.longitude, spot.latitude, spot.name, ratingImg, spot.yelpData.image));
+  return [
+    {
+      type: 'FeatureCollection',
+      features: geoPointArray
+    }
+  ];
+}
 // Helpers for grabbing locations
 var getSpots = () => {
   var spotsSet = geoJSONSet();
@@ -151,48 +210,7 @@ var getSpots = () => {
 export default connect(mapStateToProps, mapDispatchToProps)(Map);
 
 // Helpers for rendering mapping data
-var renderMap = () => {
-  mainMap = L.mapbox.map('map-one', 'mapbox.streets')
-    .setView(defaultCoord, 16);
 
-  var geocoderControl = L.mapbox.geocoderControl('mapbox.places', {
-    autocomplete: true,
-    keepOpen: true,
-    proximity: true,
-    container: 'geocoder-container'
-  });
-  geocoderControl.addTo(mainMap);
-
-  geocoderControl.on('select', function(res, mainMap) {
-    foundRestaurant(res, mainMap);
-  });
-
-  addPointsLayer(mainMap);
-
-  return mainMap;
-};
-
-var addPointsLayer = (map) => {
-  var restaurantPoints = L.mapbox.featureLayer().addTo(map);
-
-  restaurantPoints.on('layeradd', function(point) {
-    var marker = point.layer;
-    var feature = marker.feature;
-    marker.setIcon(L.icon(feature.properties.icon));
-    var content = '<h2>' + feature.properties.title + '<\/h2>' +
-    '<img src="' + feature.properties.image + '" alt="">';
-    marker.bindPopup(content);
-  });
-
-  restaurantPoints.setGeoJSON(getSpots());
-};
-
-// Helpers for interacting with users live location
-var getUserLocation = () => {
-  navigator.geolocation.getCurrentPosition(function(position) {
-    geoSuccess(position);
-  }, geoError);
-};
 
 var geoError = () => {
   alert('Our apologies, but it appears we are unable to find you');

@@ -98,9 +98,9 @@ export var requestYelp = function (setParameters, busId) {
 };
 
 // Multiple requests for businessId array
-export var requestMultipleYelp = function(busIds, cb) {
-  return Promise.all(busIds.map((busId) => {
-    return requestYelp(busId, true);
+export var requestMultipleYelp = function(yelpParams) {
+  return Promise.all(yelpParams.map((yelpParam) => {
+    return requestYelp(yelpParam);
   }));
   // busIds.forEach(function(busId) {
   //   requestYelp(busId, true)
@@ -115,11 +115,12 @@ export var requestMultipleYelp = function(busIds, cb) {
 
 // Parse required data out of Yelp's response data
 export var parseYelpData = function (business) {
-  var cuisine = business.categories[0][0];
+  // var cuisine = business.categories[0][0];
   var imageUrl = business.image_url;
   var businessId = business.id;
   var parsed = {
-    cuisine: cuisine,
+    name:  business.name,
+    cuisine: 'food',
     image: imageUrl,
     businessId: businessId
   };

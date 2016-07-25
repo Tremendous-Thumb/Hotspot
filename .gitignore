@@ -11,6 +11,7 @@ pids
 
 ## Compiled files ##
 compiled
+server-dist
 
 ## NPM ##
 node_modules/
