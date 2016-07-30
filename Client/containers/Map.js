@@ -154,7 +154,7 @@ class Map extends React.Component {
       var marker = point.layer;
       var feature = marker.feature;
       marker.setIcon(L.icon(feature.properties.icon));
-      var content = '<h2>' + feature.properties.title + '<\/h2>' +
+      var content = '<p style="font-size:28px">' + feature.properties.title + '<\/p>' +
       '<img src="' + feature.properties.image + '" alt="">' +
       `<img id="wishImage" src="${wishImage}" alt="">`;
       //wish icon on click, change icon
