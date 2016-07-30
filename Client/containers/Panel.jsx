@@ -26,7 +26,14 @@ console.log('panel has mounted!!!');
     let friendRequest = {
       requestee: document.getElementsByClassName('friendToAdd')[0].value
     }
+
+
 console.log(friendRequest);
+
+if (friendRequest.requestee.length===0){
+ $(".enterSomething").fadeIn(1000).fadeOut(1000);
+  console.log('enter something!!!!');
+} else {
     const data = new Promise((resolve, reject) => {
         request.post('/api/friendRequest')
         .send(friendRequest)
@@ -38,32 +45,28 @@ console.log(friendRequest);
           //;
           console.log('response test',res.text);
           if (res.text.indexOf('exist')!==-1){
-            $(".doesntExist").fadeIn(1000);
-            $(".doesntExist").fadeOut(1000);
+            $(".doesntExist").fadeIn(1000).fadeOut(1000);
             //document.getElementsByClassName("doesntExist")[0].style.display='inline';
             console.log('doesnt exist')
           } else if (res.text.indexOf('request sent')!==-1 ){
-            $(".requestSent").fadeIn(1000);
-            $(".requestSent").fadeOut(1000);
+            $(".requestSent").fadeIn(1000).fadeOut(1000);
             //document.getElementsByClassName("requestSent")[0].style.display='inline';
 
             console.log('request  sent!!')
           } else if (res.text.indexOf('already send')!==-1 ){
 
-             $(".alreadySent").fadeIn(1000);
-            $(".alreadySent").fadeOut(1000);
+             $(".alreadySent").fadeIn(1000).fadeOut(1000);
             //document.getElementsByClassName("alreadySent")[0].style.display='inline';
 
             console.log('request already sent')
           } else {
-            $(".alreadyAFriend").fadeIn(1000);
-            $(".alreadyAFriend").fadeOut(1000);
+            $(".alreadyAFriend").fadeIn(1000).fadeOut(1000);
             document.getElementsByClassName("alreadyAFriend")[0].style.display='inline';
           }
           return resolve(res);
         });
       });
-
+}
 
   }
 
@@ -82,6 +85,7 @@ if (this.props.panelMode === 'friendRequests'){
   <div ><input className = 'friendToAdd 'type='text' placeholder='Add a Friend'/>
   <button className='button' onClick={this.submitFriendReq.bind(this)}>Send Request</button></div>
 <div style= {{display:"none",color:"white"}} className='alreadyAFriend'>   Already a friend </div>
+<div style= {{display:"none",color:"white"}} className='enterSomething'>   Enter something!!! </div>
 <div style= {{display:"none",color:"white"}} className='doesntExist'>   This Person hasn't signed up   </div>
 <div style= {{display:"none",color:"white"}} className='requestSent'>   Request Sent!   </div>
 <div style= {{display:"none",color:"white"}} className='alreadySent'>   Already sent a friend request  </div>
@@ -96,6 +100,7 @@ if (this.props.panelMode === 'friendRequests'){
    <button className='button' onClick={this.submitFriendReq.bind(this)}>Send Request</button>
 <div style= {{display:"none",color:"white"}} className='alreadyAFriend'>   Already a friend </div>
 <div style= {{display:"none",color:"white"}} className='doesntExist'>   This Person hasn't signed up   </div>
+<div style= {{display:"none",color:"white"}} className='enterSomething'>   Enter something!!! </div>
 <div style= {{display:"none",color:"white"}} className='requestSent'>   Request Sent!   </div>
 <div style= {{display:"none",color:"white"}} className='alreadySent'>   Already sent a friend request  </div>
    </div>
